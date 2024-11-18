@@ -9,7 +9,7 @@ app.container = Container()
 app.container.wire(modules=[
     "homelife.api.auth",
     "homelife.api.views.device",
-    "homelife.api.views.devices"])
+    "homelife.api.views.server"])
 
 app.add_url_rule("/", "hello",  lambda: "OK")
 

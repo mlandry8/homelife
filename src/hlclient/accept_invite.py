@@ -6,7 +6,7 @@ from homelife.utilities.crypto import verify_certificate_fingerprint
 
 def accept_request(host, thumb, token, nickname):
     # unverified tls connection
-    cert = requests.get(f"https://{host}/cert", verify=False).content
+    cert = requests.get(f"https://{host}/server/cert", verify=False).content
 
     # verify cert
     if not verify_certificate_fingerprint(cert, thumb):
