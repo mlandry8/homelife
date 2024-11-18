@@ -1,7 +1,7 @@
 from flask import Flask
 
 from homelife.container import Container
-from homelife.api.views import device, devices, cert
+from homelife.api.views import device, server
 
 
 app = Flask(__name__)
@@ -27,16 +27,15 @@ app.add_url_rule(
     device.post_location, methods=["POST"]
 )
 
-# Devices URLS
+# Server URLS
 app.add_url_rule(
-    "/devices", "get_devices",
-    devices.get_devices, methods=["GET"]
+    "/server/devices", "get_devices",
+    server.get_devices, methods=["GET"]
 )
 
-# Cert URLS
 app.add_url_rule(
-    "/cert", "get_cert",
-    cert.get_cert, methods=["GET"]
+    "/server/cert", "get_cert",
+    server.get_cert, methods=["GET"]
 )
 
 

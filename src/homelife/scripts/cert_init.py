@@ -15,12 +15,10 @@ def cert_init(mongo_client=Provide[Container.clients.mongo_client]):
 
     server_info = mongo_client.collection('server').find_one()
 
-    if server_info.get('ip') != external_ip:
+    if not server_info or server_info.get('ip') != external_ip:
         cert, private = generate_cert(external_ip)
 
-        # get old thumbrint
-        # register new thumbprint with discovery service
-        # write new thumbprint
+        # TODO: register with discovery service
 
         mongo_client.collection('server').update_one(
             {'_id': 'server_info'},
