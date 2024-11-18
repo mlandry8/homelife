@@ -1,15 +1,15 @@
 import requests
 import secrets
 
-from hlclient import HOST, THUMB, TOKEN, NICKNAME
+from hlclient import HOST, FINGER, TOKEN, NICKNAME
 from homelife.utilities.crypto import verify_certificate_fingerprint
 
-def accept_request(host, thumb, token, nickname):
+def accept_request(host, finger, token, nickname):
     # unverified tls connection
     cert = requests.get(f"https://{host}/server/cert", verify=False).content
 
     # verify cert
-    if not verify_certificate_fingerprint(cert, thumb):
+    if not verify_certificate_fingerprint(cert, finger):
         raise Exception("Invalid certificate")
 
     # init device with server
@@ -34,4 +34,4 @@ def accept_request(host, thumb, token, nickname):
 
 
 if __name__ == '__main__':
-    accept_request(HOST, THUMB, TOKEN, NICKNAME)
+    accept_request(HOST, FINGER, TOKEN, NICKNAME)
