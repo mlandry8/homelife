@@ -28,9 +28,7 @@ COPY --from=build /build/${VIRTUAL_ENV} ${VIRTUAL_ENV}
 EXPOSE 5000
 
 RUN mkdir etc
-COPY scripts/startup.sh .
-
-EXPOSE 5000
+COPY startup.sh .
 
 # Run the startup script
 CMD ["sh", "-c", "./startup.sh ${PYTHON}"]
