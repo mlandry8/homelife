@@ -1,0 +1,26 @@
+services:
+  homelife:
+    env_file: environments/${ENV}.env
+    build:
+      context: .
+      args:
+        - ENV=${ENV}
+        - VIRTUAL_ENV=${VIRTUAL_ENV}
+      target: runtime
+    ports:
+      - "5000:5000"
+    develop:
+      watch:
+        - action: sync+restart
+          path: src/
+          target: /app/${VIRTUAL_ENV}/lib64/python3.11/site-packages/
+          ignore:
+            - "_pycache_"
+    stdin_open: true
+    tty: true
+  mongo:
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
