@@ -5,8 +5,9 @@ from homelife.container import Container
 from homelife.models.device import Device
 from homelife.api.auth import authenticate
 
+
 @inject
-def post_device(device_id: str, device: Device=Provide[Container.models.device]):
+def post_device(device_id: str, device: Device = Provide[Container.models.device]):
     token = request.json.get("token")
     nickname = request.json.get("nickname")
 
@@ -19,16 +20,18 @@ def post_device(device_id: str, device: Device=Provide[Container.models.device])
 
     return device.to_dict()
 
+
 @authenticate()
 @inject
-def get_device(device_id: str, device: Device=Provide[Container.models.device]):
+def get_device(device_id: str, device: Device = Provide[Container.models.device]):
     device.retrieve(device_id=device_id)
 
     return device.to_dict()
 
+
 @authenticate(device=True)
 @inject
-def post_location(device_id: str, device: Device=Provide[Container.models.device]):
+def post_location(device_id: str, device: Device = Provide[Container.models.device]):
     device.retrieve(device_id=device_id)
 
     # add location

@@ -1,10 +1,8 @@
 from pymongo import MongoClient
 
+
 class MongoDBClient:
-    def __init__(
-            self, host, port, 
-             username, password,
-             database_name):
+    def __init__(self, host, port, username, password, database_name):
         uri = f"mongodb://{username}:{password}@{host}:{port}/"
 
         self.client = MongoClient(uri)

@@ -10,36 +10,39 @@ from homelife.utilities.crypto import generate_cert
 @inject
 def cert_init(mongo_client=Provide[Container.clients.mongo_client]):
     external_ip = requests.get(
-        "https://api.ipify.org",
-        params={'format': 'json'}).json()['ip']
+        "https://api.ipify.org", params={"format": "json"}
+    ).json()["ip"]
 
-    server_info = mongo_client.collection('server').find_one()
+    server_info = mongo_client.collection("server").find_one()
 
-    if not server_info or server_info.get('ip') != external_ip:
+    if not server_info or server_info.get("ip") != external_ip:
         cert, private = generate_cert(external_ip)
 
         # TODO: register with discovery service
 
-        mongo_client.collection('server').update_one(
-            {'_id': 'server_info'},
-            {'$set': {
-                'ip': external_ip,
-                'port': 5000,
-                'cert': cert,
-                'priv': private,
-                'status': 'current'
-            }},
-            upsert=True
+        mongo_client.collection("server").update_one(
+            {"_id": "server_info"},
+            {
+                "$set": {
+                    "ip": external_ip,
+                    "port": 5000,
+                    "cert": cert,
+                    "priv": private,
+                    "status": "current",
+                }
+            },
+            upsert=True,
         )
-        server_info = mongo_client.collection('server').find_one()
+        server_info = mongo_client.collection("server").find_one()
 
-    with open(f'{os.path.curdir}/etc/cert.pem', 'wb') as f:
-        f.write(server_info.get('cert'))
+    with open(f"{os.path.curdir}/etc/cert.pem", "wb") as f:
+        f.write(server_info.get("cert"))
 
-    with open(f'{os.path.curdir}/etc/key.pem', 'wb') as f:
-        f.write(server_info.get('priv'))
+    with open(f"{os.path.curdir}/etc/key.pem", "wb") as f:
+        f.write(server_info.get("priv"))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     container = Container()
     container.init_resources()
     container.wire(modules=[__name__])
