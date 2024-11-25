@@ -1,15 +1,24 @@
 from homelife.models import Model
-from homelife.clients.mongo import MongoDBClient
-from typing import Any
+from typing import Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from homelife.clients.mongo import MongoDBClient
+
 
 class Device(Model):
-    def __init__(self, db: MongoDBClient, collection: str, device_id: str|None=None, token: str|None=None):
+    def __init__(
+        self,
+        db: MongoDBClient,
+        collection: str,
+        device_id: str | None = None,
+        token: str | None = None,
+    ):
         super().__init__(db, collection)
 
-        self.device_id: str|None = device_id
-        self.token: str|None = token
-        self.status: str|None = None
-        self.nickname: str|None = None
+        self.device_id: str | None = device_id
+        self.token: str | None = token
+        self.status: str | None = None
+        self.nickname: str | None = None
         self.locations: list[Any] = []
 
     def _set(self, device: Any) -> None:
@@ -45,7 +54,7 @@ class Device(Model):
 
         self._set(device)
 
-    def retrieve(self, device_id:str|None=None, token:str|None=None) -> None:
+    def retrieve(self, device_id: str | None = None, token: str | None = None) -> None:
         device_id = device_id or self.device_id
         token = token or self.token
 

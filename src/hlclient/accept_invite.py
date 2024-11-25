@@ -23,7 +23,7 @@ def accept_request(host: str, finger: str, token: str, nickname: str) -> None:
     ).raise_for_status()
 
     # get device info
-    device: dict[str,str] = requests.get(
+    device: dict[str, str] = requests.get(
         f"https://{host}/device/{device_id}",
         headers={"Authorization": f"Bearer {token}"},
         verify="etc/cert.pem",

@@ -7,11 +7,13 @@ from homelife.api.auth import authenticate
 
 
 @inject
-def post_device(device_id: str, device: Device = Provide[Application.models.device] #type: ignore
-        ) -> tuple[dict[str, str], Literal[400]] | dict[str, Any]:
+def post_device(
+    device_id: str,
+    device: Device = Provide[Application.models.device],  # type: ignore
+) -> tuple[dict[str, str], Literal[400]] | dict[str, Any]:
     try:
-        token: str = request.json.get("token") # type: ignore
-        nickname: str = request.json.get("nickname") # type: ignore
+        token: str = request.json.get("token")  # type: ignore
+        nickname: str = request.json.get("nickname")  # type: ignore
     except AttributeError:
         return {"message": "Invalid request"}, 400
 
@@ -27,8 +29,10 @@ def post_device(device_id: str, device: Device = Provide[Application.models.devi
 
 @authenticate()
 @inject
-def get_device(device_id: str, device: Device = Provide[Application.models.device] # type: ignore
-        ) -> dict[str, Any]:
+def get_device(
+    device_id: str,
+    device: Device = Provide[Application.models.device],  # type: ignore
+) -> dict[str, Any]:
     device.retrieve(device_id=device_id)
 
     return device.to_dict()
@@ -36,8 +40,10 @@ def get_device(device_id: str, device: Device = Provide[Application.models.devic
 
 @authenticate(device=True)
 @inject
-def post_location(device_id: str, device: Device = Provide[Application.models.device] #type: ignore
-        ) -> dict[str, Any]:
+def post_location(
+    device_id: str,
+    device: Device = Provide[Application.models.device],  # type: ignore
+) -> dict[str, Any]:
     device.retrieve(device_id=device_id)
 
     # add location

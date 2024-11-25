@@ -1,7 +1,9 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from homelife.clients.mongo import MongoDBClient
 from homelife.models import Model
+
+if TYPE_CHECKING:
+    from homelife.clients.mongo import MongoDBClient
 
 
 class Devices(Model):

@@ -1,6 +1,9 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
 from pymongo.synchronous.collection import Collection
-from homelife.clients.mongo import MongoDBClient
+
+if TYPE_CHECKING:
+    from homelife.clients.mongo import MongoDBClient
 
 
 class Model:

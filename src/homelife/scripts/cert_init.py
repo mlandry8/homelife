@@ -1,19 +1,20 @@
-import requests
 import os
+from typing import TYPE_CHECKING, Any
 
-from typing import Any
-
+import requests
 from dependency_injector.wiring import Provide, inject
 
-from homelife.clients.mongo import MongoDBClient
 from homelife.container import Application
 from homelife.utilities.crypto import generate_cert
+
+if TYPE_CHECKING:
+    from homelife.clients.mongo import MongoDBClient
 
 
 @inject
 def cert_init(
     mongo_client: MongoDBClient = Provide[Application.clients.mongo_client],  # type: ignore
-        ) -> None:
+) -> None:
     external_ip: str | None = requests.get(
         "https://api.ipify.org", params={"format": "json"}
     ).json()["ip"]
@@ -44,10 +45,10 @@ def cert_init(
 
     try:
         with open(f"{os.path.curdir}/etc/cert.pem", "wb") as f:
-            f.write(server_info.get("cert")) #type: ignore
+            f.write(server_info.get("cert"))  # type: ignore
 
         with open(f"{os.path.curdir}/etc/key.pem", "wb") as f:
-            f.write(server_info.get("priv")) #type: ignore
+            f.write(server_info.get("priv"))  # type: ignore
 
     except (AttributeError, TypeError):
         raise Exception("Invalid server info")
@@ -55,7 +56,7 @@ def cert_init(
 
 if __name__ == "__main__":
     container: Application = Application()
-    container.init_resources() #type: ignore
+    container.init_resources()  # type: ignore
     container.wire(modules=[__name__])
 
     cert_init()
