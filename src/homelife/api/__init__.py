@@ -1,12 +1,13 @@
 from flask import Flask
 
-from homelife.container import Container
+from homelife.container import Application
 from homelife.api.views import device, server
 
 
-app = Flask(__name__)
-app.container = Container()
-app.container.wire(
+app: Flask = Flask(__name__)
+
+container: Application = Application()
+container.wire(
     modules=[
         "homelife.api.auth",
         "homelife.api.views.device",

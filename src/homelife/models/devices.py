@@ -1,13 +1,16 @@
+from typing import Any
+
+from homelife.clients.mongo import MongoDBClient
 from homelife.models import Model
 
 
 class Devices(Model):
-    def __init__(self, db, collection):
+    def __init__(self, db: MongoDBClient, collection: str) -> None:
         super().__init__(db, collection)
 
-        self.devices = []
+        self.devices: list[Any] = []
 
-    def retrieve(self):
+    def retrieve(self) -> None:
         self.devices = list(
             self.db.aggregate(
                 [

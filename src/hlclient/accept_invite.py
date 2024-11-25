@@ -1,20 +1,21 @@
-import requests
 import secrets
 
-from hlclient import HOST, FINGER, TOKEN, NICKNAME
+import requests
+
+from hlclient import FINGER, HOST, NICKNAME, TOKEN
 from homelife.utilities.crypto import verify_certificate_fingerprint
 
 
-def accept_request(host, finger, token, nickname):
+def accept_request(host: str, finger: str, token: str, nickname: str) -> None:
     # unverified tls connection
-    cert = requests.get(f"https://{host}/server/cert", verify=False).content
+    cert: bytes = requests.get(f"https://{host}/server/cert", verify=False).content
 
     # verify cert
     if not verify_certificate_fingerprint(cert, finger):
         raise Exception("Invalid certificate")
 
     # init device with server
-    device_id = secrets.token_urlsafe(32)
+    device_id: str = secrets.token_urlsafe(32)
     requests.post(
         f"https://{host}/device/{device_id}",
         json={"token": token, "nickname": nickname},
@@ -22,7 +23,7 @@ def accept_request(host, finger, token, nickname):
     ).raise_for_status()
 
     # get device info
-    device = requests.get(
+    device: dict[str,str] = requests.get(
         f"https://{host}/device/{device_id}",
         headers={"Authorization": f"Bearer {token}"},
         verify="etc/cert.pem",

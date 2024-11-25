@@ -1,22 +1,15 @@
 from dependency_injector import containers, providers
+from dependency_injector.providers import Configuration, Container, Factory, DependenciesContainer, Provider
 
-from homelife.conf import conf
 from homelife.clients.mongo import MongoDBClient
+from homelife.conf import conf
 from homelife.models.device import Device
 from homelife.models.devices import Devices
 
 
-class Models(containers.DeclarativeContainer):
-    config = providers.Configuration()
-    clients = providers.DependenciesContainer()
-
-    device = providers.Factory(Device, clients.mongo_client, "devices")
-    devices = providers.Factory(Devices, clients.mongo_client, "devices")
-
-
 class Clients(containers.DeclarativeContainer):
-    config = providers.Configuration()
-    mongo_client = providers.Singleton(
+    config: Configuration = providers.Configuration()
+    mongo_client: Provider[MongoDBClient] = providers.Singleton(
         MongoDBClient,
         config.mongo.host,
         config.mongo.port,
@@ -25,10 +18,17 @@ class Clients(containers.DeclarativeContainer):
         config.mongo.database,
     )
 
+class Models(containers.DeclarativeContainer):
+    config: Configuration = providers.Configuration()
+    clients: DependenciesContainer = providers.DependenciesContainer()
 
-class Container(containers.DeclarativeContainer):
-    config = providers.Configuration()
+    device: Factory[Device] = providers.Factory(Device, clients.mongo_client, "devices")  # type: ignore
+    devices: Factory[Devices] = providers.Factory(Devices, clients.mongo_client, "devices") # type: ignore
+
+
+class Application(containers.DeclarativeContainer):
+    config: Configuration = providers.Configuration()
     config.from_dict(conf)
 
-    clients = providers.Container(Clients, config=config)
-    models = providers.Container(Models, config=config, clients=clients)
+    clients: Container[Clients] = providers.Container(Clients, config=config)
+    models: Container[Models] = providers.Container(Models, config=config, clients=clients)
