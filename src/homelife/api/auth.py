@@ -9,7 +9,9 @@ from homelife.models.device import Device
 
 
 def validate_bearer_token(
-    token: str, device_id:str|None=None, device: Device = Provide[Application.models.device] # type: ignore
+    token: str,
+    device_id: str | None = None,
+    device: Device = Provide[Application.models.device],  # type: ignore
 ) -> bool:
     device.retrieve(token=token, device_id=device_id)
     device_match: bool = device_id == device.device_id if device_id else True
@@ -17,7 +19,7 @@ def validate_bearer_token(
     return device.is_set() and device_match
 
 
-def authenticate(device:bool=False) -> Callable[..., Callable[..., Any]]:
+def authenticate(device: bool = False) -> Callable[..., Callable[..., Any]]:
     def decorator(f: Callable[..., Any]) -> Callable[..., Any]:
         @wraps(f)
         def decorated_function(*args: tuple[Any], **kwargs: dict[Any, Any]) -> Any:

@@ -8,13 +8,13 @@ from cryptography.x509.oid import NameOID
 from cryptography import x509
 
 
-def generate_cert(ip:str|None=None) -> tuple[bytes, bytes]:
+def generate_cert(ip: str | None = None) -> tuple[bytes, bytes]:
     private_key: rsa.RSAPrivateKey = rsa.generate_private_key(
         public_exponent=65537, key_size=2048, backend=default_backend()
     )
     public_key: rsa.RSAPublicKey = private_key.public_key()
 
-    builder:x509.CertificateBuilder = x509.CertificateBuilder()
+    builder: x509.CertificateBuilder = x509.CertificateBuilder()
     builder = builder.subject_name(
         x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "homelife")])
     )
@@ -52,7 +52,7 @@ def generate_cert(ip:str|None=None) -> tuple[bytes, bytes]:
     )
 
 
-def get_certificate_fingerprint(cert_pem:bytes) -> str:
+def get_certificate_fingerprint(cert_pem: bytes) -> str:
     cert: x509.Certificate = x509.load_pem_x509_certificate(cert_pem, default_backend())
     fingerprint: bytes = cert.fingerprint(hashes.SHA256())
     return fingerprint.hex()

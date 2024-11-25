@@ -10,8 +10,9 @@ from homelife.api.auth import authenticate
 
 @authenticate()
 @inject
-def get_devices(devices: Devices = Provide[Application.models.devices] #type: ignore
-        ) -> list[Any]:
+def get_devices(
+    devices: Devices = Provide[Application.models.devices],  # type: ignore
+) -> list[Any]:
     devices.retrieve()
 
     return devices.devices

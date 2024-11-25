@@ -1,15 +1,19 @@
 import secrets
 
-from typing import Any
+from typing import Any, TYPE_CHECKING
 from dependency_injector.wiring import Provide, inject
 
 from homelife.utilities.crypto import get_certificate_fingerprint
 from homelife.container import Application
-from homelife.clients.mongo import MongoDBClient
+
+if TYPE_CHECKING:
+    from homelife.clients.mongo import MongoDBClient
+
 
 @inject
-def device_gen(mongo_client:MongoDBClient=Provide[Application.clients.mongo_client] #type: ignore
-        ) -> dict[str, str]:
+def device_gen(
+    mongo_client: MongoDBClient = Provide[Application.clients.mongo_client],  # type: ignore
+) -> dict[str, str]:
     # Generate a secret token for the device
     token = secrets.token_urlsafe(32)
     mongo_client.collection("devices").insert_one({"token": token, "status": "pending"})
@@ -21,7 +25,7 @@ def device_gen(mongo_client:MongoDBClient=Provide[Application.clients.mongo_clie
 
     invite_pkg: dict[str, str] = {
         "server": f'{server_info.get("ip")}:{server_info.get("port")}',
-        "fingerprint": get_certificate_fingerprint(server_info.get("cert")), #type: ignore
+        "fingerprint": get_certificate_fingerprint(server_info.get("cert")),  # type: ignore
         "token": token,
     }
 
@@ -31,7 +35,7 @@ def device_gen(mongo_client:MongoDBClient=Provide[Application.clients.mongo_clie
 
 if __name__ == "__main__":
     container = Application()
-    container.init_resources() #type: ignore
+    container.init_resources()  # type: ignore
     container.wire(modules=[__name__])
 
     device_gen()
