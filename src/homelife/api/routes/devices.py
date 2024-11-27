@@ -48,13 +48,11 @@ def post_device(
     device_repo: DeviceRepo,
 ):
     try:
-        _device: PublicDevice = PublicDevice(
+        return PublicDevice(
             **device_repo.intialise(device).model_dump()
         )
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
-
-    return _device
 
 
 # post a device location.
