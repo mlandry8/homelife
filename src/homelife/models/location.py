@@ -7,8 +7,3 @@ class Coordinates(BaseModel):
 class Location(BaseModel):
     coordinates: Coordinates
     time: int
-
-class Locations(BaseModel):
-    locations: list[Location]
-
-
