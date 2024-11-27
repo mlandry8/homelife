@@ -2,19 +2,15 @@ import os
 from typing import TYPE_CHECKING, Any
 
 import requests
-from dependency_injector.wiring import Provide, inject
 
-from homelife.container import Application
+from homelife.clients.mongo import get_mongo_client
 from homelife.utilities.crypto import generate_cert
 
 if TYPE_CHECKING:
     from homelife.clients.mongo import MongoDBClient
 
 
-@inject
-def cert_init(
-    mongo_client: MongoDBClient = Provide[Application.clients.mongo_client],  # type: ignore
-) -> None:
+def cert_init(mongo_client: "MongoDBClient") -> None:
     external_ip: str | None = requests.get(
         "https://api.ipify.org", params={"format": "json"}
     ).json()["ip"]
@@ -33,7 +29,7 @@ def cert_init(
             {
                 "$set": {
                     "ip": external_ip,
-                    "port": 5000,
+                    "port": 8000,
                     "cert": cert,
                     "priv": private,
                     "status": "current",
@@ -55,8 +51,4 @@ def cert_init(
 
 
 if __name__ == "__main__":
-    container: Application = Application()
-    container.init_resources()  # type: ignore
-    container.wire(modules=[__name__])
-
-    cert_init()
+    cert_init(get_mongo_client())

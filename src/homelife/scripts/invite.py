@@ -1,21 +1,19 @@
 import secrets
 
 from typing import Any, TYPE_CHECKING
-from dependency_injector.wiring import Provide, inject
 
+from homelife.clients.mongo import get_mongo_client
 from homelife.utilities.crypto import get_certificate_fingerprint
-from homelife.container import Application
 
 if TYPE_CHECKING:
     from homelife.clients.mongo import MongoDBClient
 
 
-@inject
 def device_gen(
-    mongo_client: MongoDBClient = Provide[Application.clients.mongo_client],  # type: ignore
+    mongo_client: "MongoDBClient"
 ) -> dict[str, str]:
     # Generate a secret token for the device
-    token = secrets.token_urlsafe(32)
+    token: str = secrets.token_urlsafe(32)
     mongo_client.collection("devices").insert_one({"token": token, "status": "pending"})
 
     server_info: dict[str, Any] | None = mongo_client.collection("server").find_one()
@@ -34,8 +32,4 @@ def device_gen(
 
 
 if __name__ == "__main__":
-    container = Application()
-    container.init_resources()  # type: ignore
-    container.wire(modules=[__name__])
-
-    device_gen()
+    device_gen(get_mongo_client())
