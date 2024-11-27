@@ -20,15 +20,16 @@ RUN python -m venv ${VIRTUAL_ENV} && \
 FROM python:3.11-slim AS runtime
 
 WORKDIR /app
+
 ARG VIRTUAL_ENV
 ENV PYTHON=/app/${VIRTUAL_ENV}/bin/python
 
-COPY --from=build /build/${VIRTUAL_ENV} ${VIRTUAL_ENV}
-
-EXPOSE 5000
-
 RUN mkdir etc
+
+COPY --from=build /build/${VIRTUAL_ENV} ${VIRTUAL_ENV}
 COPY startup.sh .
+
+EXPOSE 8000
 
 # Run the startup script
 CMD ["sh", "-c", "./startup.sh ${PYTHON}"]
