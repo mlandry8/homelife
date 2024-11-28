@@ -3,12 +3,13 @@ import secrets
 import requests
 
 from hlclient import FINGER, HOST, NICKNAME, TOKEN
+from homelife.models.device import Device
 from homelife.utilities.crypto import verify_certificate_fingerprint
 
 
 def accept_request(host: str, finger: str, token: str, nickname: str) -> None:
     # unverified tls connection
-    cert: bytes = requests.get(f"https://{host}/server/cert", verify=False).content
+    cert: bytes = requests.get(f"https://{host}/cert", verify=False).content
 
     # verify cert
     if not verify_certificate_fingerprint(cert, finger):
@@ -17,17 +18,25 @@ def accept_request(host: str, finger: str, token: str, nickname: str) -> None:
     # init device with server
     device_id: str = secrets.token_urlsafe(32)
     requests.post(
-        f"https://{host}/device/{device_id}",
-        json={"token": token, "nickname": nickname},
+        f"https://{host}/devices",
+        json={
+            "device": {
+                "token": token,
+                "device_id": device_id,
+                "nickname": nickname,
+            }
+        },
         verify="etc/cert.pem",
     ).raise_for_status()
 
     # get device info
-    device: dict[str, str] = requests.get(
-        f"https://{host}/device/{device_id}",
+    res: requests.Response = requests.get(
+        f"https://{host}/devices/{device_id}",
         headers={"Authorization": f"Bearer {token}"},
         verify="etc/cert.pem",
-    ).json()
+    )
+    res.raise_for_status()
+    device: Device = Device(**res.json())
 
     print(device)
 

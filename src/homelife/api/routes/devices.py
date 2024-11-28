@@ -43,14 +43,12 @@ async def get_device(
 
 # initiate device
 @router.post("/", response_model=PublicDevice, status_code=status.HTTP_201_CREATED)
-def post_device(
+async def post_device(
     device: PostDevice,
     device_repo: DeviceRepo,
 ):
     try:
-        return PublicDevice(
-            **device_repo.intialise(device).model_dump()
-        )
+        return PublicDevice(**device_repo.intialise(device).model_dump())
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
 
@@ -62,7 +60,7 @@ def post_device(
     dependencies=[Depends(verify_token_device_id)],
     status_code=status.HTTP_201_CREATED,
 )
-def post_location(device_id: str, location: Location, device_repo: DeviceRepo):
+async def post_location(device_id: str, location: Location, device_repo: DeviceRepo):
     device: Device = device_repo.retrieve_one(device_id=device_id)
     device_repo.add_location(device, location)
 

@@ -42,7 +42,7 @@ class DeviceRepository(Repository):
         self,
         device_id: str | None = None,
         token: str | None = None,
-        strict: bool = False
+        strict: bool = False,
     ) -> Device:
         device: dict[str, Any] | None = {}
 
@@ -69,13 +69,22 @@ class DeviceRepository(Repository):
                         "nickname": 1,
                         "token": 1,
                         "status": 1,
-                        "locations": [{"$arrayElemAt": ["$locations", -1]}],
+                        "locations": {
+                            "$cond": {
+                                "if": {
+                                    "$ne": [{"$ifNull": ["$locations", None]}, None]
+                                },
+                                "then": [{"$arrayElemAt": ["$locations", -1]}],
+                                "else": [],
+                            }
+                        },
                     }
                 },
                 {"$project": {"_id": 0}},
             ]
         ):
             yield Device(**device)
+
 
     def add_location(self, device: Device, location: Location) -> None:
         device.locations.append(location)
